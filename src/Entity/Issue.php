@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Enum\Severity;
+use App\Enum\Status;
 use App\Repository\IssueRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
@@ -29,6 +31,16 @@ class Issue
     #[Assert\Length(min: 3)]
     #[Assert\NotIdenticalTo(propertyPath: "title", message: "Description can't match the title")]
     private ?string $description = null;
+
+    #[ORM\Column(type: Types::INTEGER, enumType: Status::class)]
+    #[Assert\NotBlank]
+    #[Assert\Choice([Status::OPEN, Status::CLOSED, Status::IN_PROGRESS, Status::RESOLVED])]
+    private ?Status $status = null;
+
+    #[ORM\Column(type: Types::INTEGER, enumType: Severity::class)]
+    #[Assert\NotBlank]
+    #[Assert\Choice([Severity::LOW, Severity::MEDIUM, Severity::HIGH])]
+    private ?Severity $severity = null;
 
     #[ORM\Column]
     private ?DateTimeImmutable $createdAt = null;
@@ -75,6 +87,26 @@ class Issue
         $this->description = $description;
 
         return $this;
+    }
+
+    public function getStatus(): ?Status
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?Status $status): void
+    {
+        $this->status = $status;
+    }
+
+    public function getSeverity(): ?Severity
+    {
+        return $this->severity;
+    }
+
+    public function setSeverity(?Severity $severity): void
+    {
+        $this->severity = $severity;
     }
 
     public function getCreatedAt(): ?DateTimeImmutable

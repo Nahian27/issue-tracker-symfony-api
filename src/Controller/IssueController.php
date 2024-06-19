@@ -8,21 +8,16 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Uuid;
 
 #[Route(path: '/issue', format: 'json')]
 class IssueController extends AbstractController
 {
-    private IssueRepository $issueRepository;
-    private EntityManagerInterface $entityManager;
-
     public function __construct(
-        EntityManagerInterface $entityManager,
-        IssueRepository $issueRepository
+        private readonly EntityManagerInterface $entityManager,
+        private readonly IssueRepository $issueRepository
     ) {
-        $this->entityManager = $entityManager;
-        $this->issueRepository = $issueRepository;
     }
 
     #[Route(path: '/', methods: ['GET'])]
@@ -62,6 +57,9 @@ class IssueController extends AbstractController
 
         $issue->setTitle($newIssue->getTitle());
         $issue->setDescription($newIssue->getDescription());
+        $issue->setStatus($newIssue->getStatus());
+        $issue->setSeverity($newIssue->getSeverity());
+
         $this->entityManager->flush();
 
         return $this->json([

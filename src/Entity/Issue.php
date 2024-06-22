@@ -2,8 +2,9 @@
 
 namespace App\Entity;
 
-use App\Enum\Severity;
-use App\Enum\Status;
+use App\Enum\IssueSeverity;
+use App\Enum\IssueStatus;
+use App\Enum\IssueType;
 use App\Repository\IssueRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
@@ -32,15 +33,20 @@ class Issue
     #[Assert\NotIdenticalTo(propertyPath: "title", message: "Description can't match the title")]
     private ?string $description = null;
 
-    #[ORM\Column(type: Types::INTEGER, enumType: Status::class)]
+    #[ORM\Column(type: Types::INTEGER, enumType: IssueType::class)]
     #[Assert\NotBlank]
-    #[Assert\Choice([Status::OPEN, Status::CLOSED, Status::IN_PROGRESS, Status::RESOLVED])]
-    private ?Status $status = null;
+    #[Assert\Choice([IssueType::FEATURE, IssueType::BUG])]
+    private ?IssueType $type = null;
 
-    #[ORM\Column(type: Types::INTEGER, enumType: Severity::class)]
+    #[ORM\Column(type: Types::INTEGER, enumType: IssueStatus::class)]
     #[Assert\NotBlank]
-    #[Assert\Choice([Severity::LOW, Severity::MEDIUM, Severity::HIGH])]
-    private ?Severity $severity = null;
+    #[Assert\Choice([IssueStatus::OPEN, IssueStatus::CLOSED, IssueStatus::IN_PROGRESS, IssueStatus::RESOLVED])]
+    private ?IssueStatus $status = null;
+
+    #[ORM\Column(type: Types::INTEGER, enumType: IssueSeverity::class)]
+    #[Assert\NotBlank]
+    #[Assert\Choice([IssueSeverity::LOW, IssueSeverity::MEDIUM, IssueSeverity::HIGH])]
+    private ?IssueSeverity $severity = null;
 
     #[ORM\Column]
     private ?DateTimeImmutable $createdAt = null;
@@ -49,13 +55,13 @@ class Issue
     private ?DateTimeImmutable $updatedAt = null;
 
     #[ORM\PrePersist]
-    public function prePersist(): void
+    public final function prePersist(): void
     {
         $this->createdAt = new DateTimeImmutable();
     }
 
     #[ORM\PreUpdate]
-    public function preUpdate(): void
+    public final function preUpdate(): void
     {
         $this->updatedAt = new DateTimeImmutable();
     }
@@ -89,22 +95,32 @@ class Issue
         return $this;
     }
 
-    public function getStatus(): ?Status
+    public function getType(): ?IssueType
+    {
+        return $this->type;
+    }
+
+    public function setType(?IssueType $type): void
+    {
+        $this->type = $type;
+    }
+
+    public function getStatus(): ?IssueStatus
     {
         return $this->status;
     }
 
-    public function setStatus(?Status $status): void
+    public function setStatus(?IssueStatus $status): void
     {
         $this->status = $status;
     }
 
-    public function getSeverity(): ?Severity
+    public function getSeverity(): ?IssueSeverity
     {
         return $this->severity;
     }
 
-    public function setSeverity(?Severity $severity): void
+    public function setSeverity(?IssueSeverity $severity): void
     {
         $this->severity = $severity;
     }
@@ -114,22 +130,8 @@ class Issue
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeImmutable $createdAt): static
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
     public function getUpdatedAt(): ?DateTimeImmutable
     {
         return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(?DateTimeImmutable $updatedAt): static
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
     }
 }

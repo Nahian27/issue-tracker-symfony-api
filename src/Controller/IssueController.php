@@ -9,7 +9,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Uid\Uuid;
 
 #[Route(path: '/issue', format: 'json')]
 class IssueController extends AbstractController
@@ -24,7 +23,7 @@ class IssueController extends AbstractController
     public final function issueList(): Response
     {
         return $this->json([
-            'status' => 'success',
+            'status' => Response::HTTP_OK,
             'data' => $this->issueRepository->findAll(),
         ]);
     }
@@ -33,7 +32,7 @@ class IssueController extends AbstractController
     public final function issueSingle(Issue $issue): Response
     {
         return $this->json([
-            'status' => 'success',
+            'status' => Response::HTTP_OK,
             'data' => $issue,
         ]);
     }
@@ -45,25 +44,24 @@ class IssueController extends AbstractController
         $this->entityManager->flush();
 
         return $this->json([
-            'status' => 'success',
+            'status' => Response::HTTP_OK,
             'message' => 'Created successfully',
         ]);
     }
 
-    #[route('/{id}', methods: ['PUT'])]
-    public final function issueUpdate(Uuid $id, #[MapRequestPayload] Issue $newIssue): Response
+    #[route('/{id}', methods: ['PATCH'])]
+    public final function issueUpdate(Issue $issue, #[MapRequestPayload] Issue $newIssue): Response
     {
-        $issue = $this->issueRepository->find($id);
-
         $issue->setTitle($newIssue->getTitle());
         $issue->setDescription($newIssue->getDescription());
+        $issue->setType($newIssue->getType());
         $issue->setStatus($newIssue->getStatus());
         $issue->setSeverity($newIssue->getSeverity());
 
         $this->entityManager->flush();
 
         return $this->json([
-            'status' => 'success',
+            'status' => Response::HTTP_OK,
             'message' => 'Updated successfully',
         ]);
     }
@@ -75,7 +73,7 @@ class IssueController extends AbstractController
         $this->entityManager->flush();
 
         return $this->json([
-            'status' => 'success',
+            'status' => Response::HTTP_OK,
             'message' => 'Delete successfully',
         ]);
     }

@@ -2,7 +2,7 @@
 
 namespace App\Enum;
 
-enum Severity: int
+enum IssueSeverity: int
 {
     case LOW = 0;
     case MEDIUM = 1;

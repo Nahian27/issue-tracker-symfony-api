@@ -2,7 +2,7 @@
 
 namespace App\Enum;
 
-enum Status: int
+enum IssueStatus: int
 {
     case OPEN = 0;
     case IN_PROGRESS = 1;
